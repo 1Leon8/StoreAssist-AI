@@ -145,6 +145,7 @@ Aisle: 12
 Bay: 4
 
 If multiple varitions exist, the application should display them aswell.
+````
 
 ## **6. MVP Features**
 
@@ -352,3 +353,5 @@ Translation Database
         v
  Product Results
 ````
+
+
