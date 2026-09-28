@@ -128,7 +128,7 @@ Translation:
 
 AI identifies:
 
-````text
+```text
 Category: Drill Bit
 Material: Concrete
 Size: 1/2 inch
@@ -146,29 +146,29 @@ Bay: 4
 
 If multiple varitions exist, the application should display them aswell.
 
-6. MVP Features
+#6. MVP Features
 
 The Minimum Viable Product (MVP) will focus on the core workflow.
 
-6.1 Speech Input
+##6.1 Speech Input
 
 The employee should be able to start a conversation and capture
 customer speech.
 
-6.2 Speech-to-Text
+##6.2 Speech-to-Text
 
 The application should convert the customer's speech into text.
 
-6.3 Language Detection
+##6.3 Language Detection
 
 The application should identify the language being spoken.
 
-6.4 Translation
+##6.4 Translation
 
 The customer's request should be translated into a language the
 employee understands.
 
-6.5 AI Product Understanding
+##6.5 AI Product Understanding
 
 AI should analyze the customer's request and identify important
 product information.
@@ -181,19 +181,19 @@ Material
 Brand
 Intended use
 Quantity
-6.6 Product Search
+##6.6 Product Search
 
 The application should search a product database using the
 information extracted from the customer's request.
 
-6.7 Product Variations
+##6.7 Product Variations
 
 The application should recognize when multiple products belong to
 the same product family.
 
 For example:
 
-3/4 in. PVC Pipe
+**3/4 in. PVC Pipe**
 
 2 ft
 5 ft
@@ -202,12 +202,12 @@ For example:
 
 Each variation should have its own SKU, inventory, and location.
 
-6.8 Inventory
+##6.8 Inventory
 
 The application should display the available quantity for each
 product.
 
-6.9 Product Location
+##6.9 Product Location
 
 The application should display the product's store location.
 
@@ -215,7 +215,7 @@ Example:
 
 Aisle: 12
 Bay: 04
-7. Product Search Requirements
+#7. Product Search Requirements
 
 Product search should support natural language rather than requiring
 the employee to know the exact product name.
@@ -243,7 +243,7 @@ Material
 Intended use
 Product family
 Related keywords
-8. Product Family and Variations
+#8. Product Family and Variations
 
 Products should be grouped into product families when appropriate.
 
@@ -275,7 +275,7 @@ Bay: 04
 The goal is to prevent the application from returning only one
 product when several relevant variations exist.
 
-9. MVP Limitations
+#9. MVP Limitations
 
 The initial version will use a mock retail product database.
 
@@ -293,7 +293,7 @@ Large-scale production infrastructure
 
 These features may be considered in future versions.
 
-10. Initial Technical Architecture
+#10. Initial Technical Architecture
 
 The initial system is expected to contain the following components:
 
@@ -381,7 +381,7 @@ Multiple store locations
 Analytics
 Deployment to Zebra handheld devices
 Integration with existing retail systems
-13. Success Criteria
+#13. Success Criteria
 
 The MVP should demonstrate that an employee can:
 
@@ -396,3 +396,4 @@ View aisle and bay information.
 
 The complete workflow should be possible without requiring the
 employee to manually switch between separate applications.
+```
