@@ -23,6 +23,18 @@ app.get("/test", (req, res) => {
     res.json({ message: "StoreAssist API is working!" });
 });
 
+
+app.get("/products", (req, res) => {
+    pool.query("SELECT * FROM products", (err, result) => {
+        if (err) {
+            console.error("Database query failed:", err);
+            res.status(500).json({ error: "Database query failed" });
+        } else {
+            res.json(result.rows);
+        }
+    });
+});
+
 app.post("/search", (req, res) => {
     console.log(req.body);
 
