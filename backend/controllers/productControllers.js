@@ -21,7 +21,24 @@ const getProductSearch = async (req, res) => {
             product_family
         );
 
-        return res.json(result.rows);
+        const searchCriteria = {
+            brand,
+            material,
+            size,
+            product,
+            product_family
+        };
+
+
+        const referenceProduct = result.rows[0] || null;
+        const recommendations = await productService.recommendProducts(
+            referenceProduct, 
+            searchCriteria);
+
+        return res.json({
+            product: referenceProduct,
+            recommendations: recommendations
+        });
 
     } catch (err) {
 

@@ -1,5 +1,4 @@
 const express = require("express");
-const pool = require("../db/database");
 
 const { getProductSearch } = require("../controllers/productControllers");
 

@@ -40,4 +40,112 @@ const getProductSearch = async (brand, material, size, product, product_family) 
     return result;
 };
 
-module.exports = { getProductSearch };
+const getRecommendationCandidates = async (
+    referenceProduct,
+    searchCriteria
+    ) => {
+
+        let result;
+
+        if (referenceProduct) {
+
+            result = await pool.query(
+                `SELECT *
+                FROM products
+                WHERE sku <> $1
+                AND (
+                    brand ILIKE $2
+                    OR material ILIKE $3
+                    OR product_family ILIKE $4
+                )`,
+                [
+                    referenceProduct.sku,
+                    referenceProduct.brand,
+                    referenceProduct.material,
+                    referenceProduct.product_family
+                ]
+            );
+
+        } else {
+
+            result = await pool.query(
+                `SELECT *
+                FROM products
+                WHERE
+                    brand ILIKE $1
+                    OR material ILIKE $2
+                    OR size ILIKE $3
+                    OR product ILIKE $4
+                    OR product_family ILIKE $5`,
+                [
+                    searchCriteria.brand,
+                    searchCriteria.material,
+                    searchCriteria.size,
+                    searchCriteria.product,
+                    searchCriteria.product_family
+                ]
+            );
+        }
+
+        return result.rows;
+    };
+
+
+const getRecommendations = (referenceProduct, candidates, searchCriteria) => {
+
+    const target = referenceProduct || searchCriteria;
+
+    const recommendations = candidates.map((candidate) => {
+
+        let score = 0;
+
+        if (candidate.product === target.product){
+            score += 4;
+        }
+
+        if (candidate.brand === target.brand){
+            score += 3;
+        }
+
+        if (candidate.size === target.size){
+            score += 2;
+        }
+
+        if (candidate.material === target.material){
+            score += 2;
+        }
+
+        if (candidate.product_family === target.product_family){
+            score += 1;
+        }
+        return {
+            ...candidate,
+            score
+        };
+
+    });
+
+    recommendations.sort((a,b) => b.score - a.score);
+    
+    return recommendations
+};
+
+const recommendProducts = async (referenceProduct, searchCriteria) => {
+
+    const candidates = await getRecommendationCandidates(referenceProduct,searchCriteria);
+
+    const recommendations = getRecommendations(
+        referenceProduct,
+        candidates,
+        searchCriteria
+    );
+
+    return recommendations;
+};
+
+
+
+module.exports = { getProductSearch, 
+    getRecommendationCandidates, 
+    getRecommendations,
+    recommendProducts};
