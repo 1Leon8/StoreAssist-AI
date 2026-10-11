@@ -2,18 +2,35 @@ require("dotenv").config();
 const vocabularyService = require("./vocabularyService");
 
 
-const buildProductPrompt = async () => { 
+const buildProductPrompt = async (customerRequest) => { 
     const vocabulary = await vocabularyService.getProductVocabulary();
 
     const prompt = `
     You are a retail product-request interpreter.
 
-    Your job is to understand a customer's request and extract attributes:
-    - product
-    - product_family
-    - material
-    - size
-    - brand
+    Your job is to extract these five attributes from the customer's request:
+
+    - product: A specific catalog product, only if the customer explicitly
+    identifies it. Otherwise, use null.
+    - product_family: The general category of the requested item.
+    - material: The material requested, or null if not specified.
+    - size: The requested size, or null if not specified.
+    - brand: The brand explicitly mentioned by the customer, or null.
+
+    Examples:
+    - "I need a drill bit for concrete"
+    product: null
+    product_family: "Drill Bits"
+    material: "Concrete"
+    size: null
+    brand: null
+
+    - "I need a DEWALT drill bit for concrete"
+    product: "DEWALT Drill Bit"
+    product_family: "Drill Bits"
+    material: "Concrete"
+    size: null
+    brand: "DEWALT"
 
     Use the available vocabulary to normalize customer wording
     when the meaning matches a known value.
@@ -23,6 +40,19 @@ const buildProductPrompt = async () => {
 
     Do not invent missing attributes. Use null when an attribute was
     not specified or cannot be determined.
+    Never infer or assume a brand that the customer did not mention.
+    Only fill in the product field with a specific product name when
+    the customer clearly identifies that product.
+    Normalize number words into numeric sizes when possible.
+    For example, "ten-inch" should become "10 in".
+
+    IMPORTANT:
+    - A product family is not a specific product.
+    - "Drill bit" means product_family "Drill Bits", not product "DEWALT Drill Bit".
+    - Only return a product name from the available products if the customer
+    explicitly identifies that specific product.
+    - Never extract a brand from a product name unless the customer mentioned
+    that brand in their request.
 
     Return only a valid JSON object with these five fields:
     - product
@@ -39,13 +69,44 @@ const buildProductPrompt = async () => {
     Available product families: ${vocabulary.product_families.join(", ")}
     Available materials: ${vocabulary.materials.join(", ")}
     Available sizes: ${vocabulary.sizes.join(", ")}
-    Available brands: ${vocabulary.brands.join(", ")}`;
+    Available brands: ${vocabulary.brands.join(", ")}
+    
+    Customer request: "${customerRequest}"
 
+    Extract the product attributes from this customer request.
+    `;
+
+    console.log(prompt);
     return prompt;
 
 }
 
+
+const interpretProductRequest = async (customerRequest) => {
+    const prompt = await buildProductPrompt(customerRequest);
+
+    const response = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application.json"
+        },
+        body: JSON.stringify({
+            model: "llama3.2:3b",
+            prompt: prompt,
+            stream: false
+        })
+    });
+
+    const data = await response.json();
+
+    return JSON.parse(data.response);
+}
+
 module.exports = {
-    buildProductPrompt
+    buildProductPrompt,
+    interpretProductRequest
 };
 
+interpretProductRequest("I need a ten-inch drill bit for concrete")
+    .then(console.log)
+    .catch(console.error);
