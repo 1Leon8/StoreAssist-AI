@@ -12,7 +12,11 @@ const buildProductPrompt = async (customerRequest) => {
 
     - product: A specific catalog product, only if the customer explicitly
     identifies it. Otherwise, use null.
-    - product_family: The general category of the requested item.
+    - product_family: The general category of the item requested.
+    Match it to the available product families whenever possible.
+    For example, "drill bit" maps to "Drill Bits".
+    Do not use null if the customer's item clearly matches a
+    known product family.
     - material: The material requested, or null if not specified.
     - size: The requested size, or null if not specified.
     - brand: The brand explicitly mentioned by the customer, or null.
