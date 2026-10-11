@@ -80,7 +80,6 @@ const buildProductPrompt = async (customerRequest) => {
     Extract the product attributes from this customer request.
     `;
 
-    console.log(prompt);
     return prompt;
 
 }
@@ -103,7 +102,15 @@ const interpretProductRequest = async (customerRequest) => {
 
     const data = await response.json();
 
-    return JSON.parse(data.response);
+    const result = JSON.parse(data.response);
+
+    for (const key of ["product", "product_family", "material", "size", "brand"]){
+        if (result[key] === "null" || result[key] === ""){
+            result[key] = null;
+        }
+    }
+
+    return result;
 }
 
 module.exports = {
@@ -111,6 +118,3 @@ module.exports = {
     interpretProductRequest
 };
 
-interpretProductRequest("I need a ten-inch drill bit for concrete")
-    .then(console.log)
-    .catch(console.error);

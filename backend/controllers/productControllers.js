@@ -1,17 +1,25 @@
 const productService = require("../services/productService");
+const aiService = require("../services/aiService");
 
 const getProductSearch = async (req, res) => {
 
-    const { brand, material, size, product, product_family } = req.query;
+    const { request } = req.query;
+
+    let { brand, material, size, product, product_family } = req.query;
 
     // Ensure at least one search parameter was provided
-    if (!brand && !material && !size && !product && !product_family) {
+    if (!request && !brand && !material && !size && !product && !product_family) {
         return res.status(400).json({
             error: "Please provide at least one search parameter"
         });
     }
 
     try {
+        if (request){
+            const interpretedRequest = await aiService.interpretProductRequest(request);
+
+            ({ brand, material, size, product, product_family} = interpretedRequest); 
+        }
 
         const result = await productService.getProductSearch(
             brand,
