@@ -54,17 +54,34 @@ const getRecommendationCandidates = async (
                 FROM products
                 WHERE sku <> $1
                 AND (
-                    brand ILIKE $2
-                    OR material ILIKE $3
-                    OR product_family ILIKE $4
+                    product_family ILIKE $2
                 )`,
                 [
                     referenceProduct.sku,
-                    referenceProduct.brand,
-                    referenceProduct.material,
+                    //referenceProduct.brand,
+                    //referenceProduct.material,
                     referenceProduct.product_family
                 ]
             );
+
+            if (result.rows.length === 0){
+                result = await pool.query(
+                    `SELECT *
+                    FROM products
+                    WHERE sku <> $1
+                    AND (
+                        brand ILIKE $2
+                        OR material ILIKE $3
+                        OR size ILIKE $4
+                    )`,
+                    [
+                        referenceProduct.sku,
+                        referenceProduct.brand,
+                        referenceProduct.material,
+                        referenceProduct.size
+                    ]
+                );
+            }
 
         } else {
 
@@ -116,7 +133,7 @@ const getRecommendations = (referenceProduct, candidates, searchCriteria) => {
         }
 
         if (candidate.product_family === target.product_family){
-            score += 1;
+            score += 5;
         }
         return {
             ...candidate,
